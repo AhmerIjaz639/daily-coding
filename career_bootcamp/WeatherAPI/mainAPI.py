@@ -5,11 +5,16 @@ from typing import Optional
 from career_bootcamp.WeatherAPI.databaseWeather import  get_db
 import requests
 
+
+
 app = FastAPI(
     title="Weather API",
     version="0.1.0",
     description="API for tracking weather"
 )
+
+
+
 
 
 def get_weather_api(city):

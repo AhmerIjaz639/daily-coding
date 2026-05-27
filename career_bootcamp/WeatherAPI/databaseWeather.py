@@ -1,15 +1,24 @@
 import pymysql
 from pymysql.cursors import DictCursor
 from contextlib import contextmanager
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': '00709710@Mysql',
-    'database': 'weather_db',
+    'host': os.getenv('DB_HOST', 'localhost'),
+    'user': os.getenv('DB_USER', 'root'),
+    'password': os.getenv('DB_PASSWORD'),
+    'database': os.getenv('WEATHER_DB_NAME', 'weather_db'),
+    'port': int(os.getenv('DB_PORT', 3306)),
     'charset': 'utf8mb4',
     'cursorclass': DictCursor
 }
+
+if not DB_CONFIG['password']:
+    raise ValueError("DB_PASSWORD not found! Check .env file")
 
 
 def get_connection():

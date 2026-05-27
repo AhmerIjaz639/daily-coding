@@ -4,30 +4,36 @@ from contextlib import contextmanager
 import os
 from dotenv import load_dotenv
 
+
 load_dotenv()
+
 
 DB_CONFIG = {
     'host': os.getenv('DB_HOST', 'localhost'),
     'user': os.getenv('DB_USER', 'root'),
     'password': os.getenv('DB_PASSWORD'),
-    'database': os.getenv('FINANCE_TRACKER', 'finance_tracker'),
+    'database': os.getenv('INVESTMENT_DB_NAME', 'investment_db'),
     'port': int(os.getenv('DB_PORT', 3306)),
     'charset': 'utf8mb4',
     'cursorclass': DictCursor
 }
 
+
 if not DB_CONFIG['password']:
-    raise ValueError("DB_PASSWORD not found! Check .env file")
+    raise ValueError("DB_PASSWORD not found in environment variables! Check your .env file.")
 
-# ... rest of code
 def get_connection():
-
-    return pymysql.connect(**DB_CONFIG)
+    """Create database connection"""
+    try:
+        return pymysql.connect(**DB_CONFIG)
+    except pymysql.Error as e:
+        print(f"Database connection failed: {e}")
+        raise
 
 
 @contextmanager
 def get_db():
-
+    """Context manager for database operations"""
     connection = get_connection()
     cursor = connection.cursor()
     try:
@@ -42,15 +48,15 @@ def get_db():
 
 
 def test_connection():
-
+    """Test if database connection works"""
     try:
         with get_db() as db:
             db.execute("SELECT 1")
-            result = db.fetchone()
-            print("Database connection successful")
+            print("✅ Database connection successful!")
+            print(f"Connected to: {DB_CONFIG['database']} as {DB_CONFIG['user']}")
             return True
     except Exception as e:
-        print(f"Database connection failed: {e}")
+        print(f" Database connection failed: {e}")
         return False
 
 
